@@ -1,4 +1,5 @@
 from mycroft import MycroftSkill, intent_file_handler
+from mycroft.util.time import now_utc
 import re
 
 class MuxlisaDateTime(MycroftSkill):
@@ -12,7 +13,7 @@ class MuxlisaDateTime(MycroftSkill):
         hour, minute = self.get_spoken_current_time(location)
         if not hour or not minute:
             return
-
+        self.log.warning("nimalar bo'ldi")
         self.speak_dialog('time.current', data={
             'minute': minute,
             'hour': hour
@@ -26,6 +27,16 @@ class MuxlisaDateTime(MycroftSkill):
             return
 
         return dt.hour, dt.minute
+
+    def get_local_datetime(self, location, dtUTC=None):
+        if not dtUTC:
+            dtUTC = now_utc()
+        tz = False
+        if not tz:
+            self.speak_dialog("time.tz.not.found", {"location": location})
+            return None
+
+        return dtUTC.astimezone(tz)
 
     def _extract_location(self, utt):
         # if "Location" in message.data:

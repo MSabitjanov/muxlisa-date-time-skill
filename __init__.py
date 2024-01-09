@@ -1,10 +1,12 @@
 from mycroft import MycroftSkill, intent_file_handler
 from mycroft.util.time import now_utc
 import re
+from tzlocal import get_localzone
 
 class MuxlisaDateTime(MycroftSkill):
     def __init__(self):
         MycroftSkill.__init__(self)
+        self.display_tz = None
 
     @intent_file_handler('what.time.is.it.intent')
     def handle_time_date_muxlisa(self, message):
@@ -31,30 +33,12 @@ class MuxlisaDateTime(MycroftSkill):
     def get_local_datetime(self, location, dtUTC=None):
         if not dtUTC:
             dtUTC = now_utc()
-        tz = False
+        tz = get_localzone()
         if not tz:
             self.speak_dialog("time.tz.not.found", {"location": location})
             return None
 
         return dtUTC.astimezone(tz)
-
-    def _extract_location(self, utt):
-        # if "Location" in message.data:
-        #     return message.data["Location"]
-        rx_file = self.find_resource('location.rx', 'regex')
-        if rx_file:
-            with open(rx_file) as f:
-                for pat in f.read().splitlines():
-                    pat = pat.strip()
-                    if pat and pat[0] == "#":
-                        continue
-                    res = re.search(pat, utt)
-                    if res:
-                        try:
-                            return res.group("Location")
-                        except IndexError:
-                            pass
-        return None
 
 def create_skill():
     return MuxlisaDateTime()

@@ -11,8 +11,7 @@ class MuxlisaDateTime(MycroftSkill):
     @intent_file_handler('what.time.is.it.intent')
     def handle_time_date_muxlisa(self, message):
         utt = message.data.get('utterance', "")
-        location = self._extract_location(utt)
-        hour, minute = self.get_spoken_current_time(location)
+        hour, minute = self.get_spoken_current_time(location=None)
         if not hour or not minute:
             return
         self.log.warning("nimalar bo'ldi")
